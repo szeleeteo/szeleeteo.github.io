@@ -3,7 +3,7 @@ title: "First Post"
 date: 2023-05-04T23:30:48+08:00
 ---
 
-The excessively elaborate, over-engineered but obligatory post on an [auspicious date](https://en.wikipedia.org/wiki/Star_Wars_Day).
+An excessively elaborate, over-engineered but obligatory, introductory post on an auspicious day.
 
 ```python
 try:
@@ -14,6 +14,6 @@ try:
         "0x6C,0x6c,0x6C,0x1A,0x65,0x65,0x48,0x1A"
     )
 except Exception as e:
-    import sys
-    _ = sys.stdout.write("".join(map(chr, list(eval(str(e))[-2:2:-2]))))
+    from sys import stdout
+    _ = stdout.write("".join(map(chr, list(eval(str(e))[-2:2:-2]))))
 ```

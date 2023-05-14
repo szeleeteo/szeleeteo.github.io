@@ -11,6 +11,7 @@ enableRobotsTXT = true
 paginate = 10
 summaryLength = 0
 enableEmoji = true
+googleAnalytics = "G-3R3007VXVM"
 
 [outputs]
   home = ["HTML", "RSS", "JSON"]

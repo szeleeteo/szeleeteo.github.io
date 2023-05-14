@@ -63,7 +63,7 @@ Recently, I came across some old code snippets in which yours truly had inadvert
 
 (By the way, any function that uses `async def` syntax is a coroutine - it can be paused and resumed during its execution.)
 
-Nevertheless, applying this mistake to the original code - substituting `asyncio.sleep` with `time.sleep` and studying the output - is more helpful than the lengthy advice of _"please use asynchronous non-blocking I/O, avoid blocking I/O operations"_. 
+Nevertheless, applying this mistake to the original code - substituting `asyncio.sleep` with `time.sleep` and studying its output - is more insightful and self-explanatory than the lengthy advice of _"please use asynchronous non-blocking I/O, avoid blocking I/O operations"_. 
 
 ```python
 # async_tasks_blocked.py 

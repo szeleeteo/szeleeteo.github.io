@@ -98,7 +98,10 @@ Task B ends
 Executed in 2.01 seconds
 ```
 
-Replace this sleep scenario with file or database read/write operations or http requests and you might discover problems you never knew you had.
+Replace the sleep block that takes some time with any of the following and you might discover problems you never knew you had.
+1. file read/write operations
+1. database read/write operations
+1. network operations e.g. HTTP requests
 
 At the expense of dishing out yet another vague advice, it finally dawned on me the meaning of [it's turtles all the way down](https://en.wikipedia.org/wiki/Turtles_all_the_way_down). 
 

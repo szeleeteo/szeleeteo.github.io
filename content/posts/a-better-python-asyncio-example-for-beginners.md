@@ -91,7 +91,7 @@ asyncio.run(run_tasks_async_blocked())
 
 ```sh
 $ python run_tasks_async_blocked.py 
-ask A starts
+Task A starts
 Task A ends
 Task B starts
 Task B ends

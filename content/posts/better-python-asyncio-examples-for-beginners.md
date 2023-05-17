@@ -24,7 +24,7 @@ Hello ...
 ... World!
 ```
 
-The whole point of asyncio is to execute tasks concurrently. Naturally, I had to dig deeper for examples elsewhere and refactored them to my own understanding. The common pattern observed is the use of `asyncio.gather`.
+The whole point of asyncio is to execute tasks concurrently. Naturally, I had to dig deeper for examples elsewhere and refactored them to my own understanding. The key here is to understand the `async` and `await` keywords placement and how to use `asyncio.gather` to achieve concurrency.
 
 ```python
 # async_tasks.py
@@ -63,7 +63,7 @@ Executed in 2.00 seconds
 ['A1', 'B2']
 ```
 
-An different approach without the need of `asyncio.gather` is to use `asyncio.create_task`.
+An alternative without the need of `asyncio.gather` is to use `asyncio.create_task`.
 
 ```python
 # async_tasks_alt.py

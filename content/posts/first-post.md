@@ -4,7 +4,7 @@ date: 2023-05-04T23:30:48+08:00
 tags: [python]
 ---
 
-An excessively elaborate, over-engineered but obligatory, introductory post on an auspicious day. This is the Way.
+An excessively elaborate, over-engineered but obligatory, introductory post on a special day. This is the Way.
 
 ```python
 try:

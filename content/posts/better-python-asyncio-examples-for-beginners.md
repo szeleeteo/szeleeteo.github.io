@@ -24,7 +24,9 @@ Hello ...
 ... World!
 ```
 
-The whole point of asyncio is to execute tasks concurrently. Naturally, I had to dig deeper for examples elsewhere and refactored them to my own understanding. The key here is to understand the `async` and `await` keywords placement and how to use `asyncio.gather` to achieve concurrency.
+A coroutine is simply a different kind of function (that can be suspended and resumed); `async` and `await` are keyword syntax to deal with it. Diving into the detailed definition and details just make the harder to understand, so we won't.
+
+The whole point of asyncio is to execute tasks concurrently. One way is by using `asyncio.gather`.
 
 ```python
 # async_tasks.py
@@ -33,13 +35,13 @@ import time
 
 async def task_a():
     print("Task A starts")
-    await asyncio.sleep(1)  # non-blocking
+    await asyncio.sleep(1)  # 1 sec non-blocking task
     print("Task A ends")
     return "A1"
 
 async def task_b():
     print("Task B starts")
-    await asyncio.sleep(2)  # non-blocking
+    await asyncio.sleep(2)  # 2 secs non-blocking task
     print("Task B ends")
     return "B2"
 
@@ -47,7 +49,7 @@ async def run_tasks_async():
     start = time.perf_counter()
     result = await asyncio.gather(task_a(), task_b())
     end = time.perf_counter()
-    print(f"Executed in {end-start:0.2f} seconds")
+    print(f"Executed in {end-start:0.2f} seconds") # takes about 2 secs
     print(result)
 
 asyncio.run(run_tasks_async())
@@ -72,26 +74,31 @@ import time
 
 async def task_a():
     print("Task A starts")
-    await asyncio.sleep(1)  # non-blocking
+    await asyncio.sleep(1)  # 1 sec non-blocking task
     print("Task A ends")
     return "A1"
 
 async def task_b():
     print("Task B starts")
-    await asyncio.sleep(2)  # non-blocking
+    await asyncio.sleep(2)  # 2 secs non-blocking task
     print("Task B ends")
     return "B2"
 
 async def run_tasks_async_alt():
-    t_a = asyncio.create_task(task_a())
-    t_b = asyncio.create_task(task_b())
-
     start = time.perf_counter()
+
+    t_a = asyncio.create_task(task_a())
+    print("Task A created...")
+    t_b = asyncio.create_task(task_b())
+    print("Task B created...")
+
+    print("Do other work here...")
+    
     result_a = await t_a
     result_b = await t_b
     end = time.perf_counter()
 
-    print(f"Executed in {end-start:0.2f} seconds")
+    print(f"Executed in {end-start:0.2f} seconds") # takes about 2 secs
     print([result_a, result_b])
 
 asyncio.run(run_tasks_async_alt())
@@ -99,6 +106,9 @@ asyncio.run(run_tasks_async_alt())
 
 ```sh
 $ python async_tasks_alt.py 
+Task A created...
+Task B created...
+Do other work here...
 Task A starts
 Task B starts
 Task A ends
@@ -116,13 +126,13 @@ import time
 
 async def task_a():
     print("Task A starts")
-    time.sleep(1)  # blocking I/O!!!
+    time.sleep(1)  # 1 sec BLOCKING task, no longer await asyncio.sleep(1)
     print("Task A ends")
     return "A1"
 
 async def task_b():
     print("Task B starts")
-    await asyncio.sleep(2)  # non-blocking as before
+    await asyncio.sleep(2)  # 2 secs non-blocking task
     print("Task B ends")
     return "B2"
 
@@ -130,9 +140,8 @@ async def run_tasks_async_blocked():
     start = time.perf_counter()
     result = await asyncio.gather(task_a(), task_b())
     end = time.perf_counter()
-    print(f"Executed in {end-start:0.2f} seconds")
+    print(f"Executed in {end-start:0.2f} seconds") # takes about 3 secs!
     print(result)
-
 
 asyncio.run(run_tasks_async_blocked())
 ```
@@ -147,7 +156,7 @@ Executed in 3.00 seconds
 ['A1', 'B2']
 ```
 
-Pop quiz, if the order of the tasks is reversed, i.e. `await asyncio.gather(task_b(), task_a())`, what would be the execution time?
+If the order of the two tasks is reversed, what would be the execution time?
 
 Replace the blocking sleep issue with any of the following and you might discover problems you never knew existed.
 1. file read/write operations

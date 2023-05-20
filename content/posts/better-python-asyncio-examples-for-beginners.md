@@ -24,7 +24,12 @@ Hello ...
 ... World!
 ```
 
-A coroutine is simply a different kind of function (that can be suspended and resumed); `async` and `await` are keyword syntax to deal with it. Diving into the detailed definition and details just make the harder to understand, so we won't.
+Slowly I learned that:
+1. A single event loop is created by `asyncio.run` as top-level entry point to run a coroutine `main`.
+1. A coroutine is a kind of non-blocking function that can be suspended and resumed; both `main` and `asyncio.sleep` above are coroutines.
+1. `async` and `await` are keywords that deal with coroutine declaration and calling respectively.
+
+Delving into the intricate definition is futile and meaningless, at least for now.
 
 The whole point of asyncio is to execute tasks concurrently. One way is by using `asyncio.gather`.
 
@@ -49,7 +54,7 @@ async def run_tasks_async():
     start = time.perf_counter()
     result = await asyncio.gather(task_a(), task_b())
     end = time.perf_counter()
-    print(f"Executed in {end-start:0.2f} seconds") # takes about 2 secs
+    print(f"Executed in {end-start:0.2f} seconds") # 2 secs
     print(result)
 
 asyncio.run(run_tasks_async())
@@ -68,7 +73,7 @@ Executed in 2.00 seconds
 An alternative without the need of `asyncio.gather` is to use `asyncio.create_task`.
 
 ```python
-# async_tasks_alt.py
+# async_tasks_create.py
 import asyncio
 import time
 
@@ -84,7 +89,7 @@ async def task_b():
     print("Task B ends")
     return "B2"
 
-async def run_tasks_async_alt():
+async def run_tasks_async_create():
     start = time.perf_counter()
 
     t_a = asyncio.create_task(task_a())
@@ -98,14 +103,14 @@ async def run_tasks_async_alt():
     result_b = await t_b
     end = time.perf_counter()
 
-    print(f"Executed in {end-start:0.2f} seconds") # takes about 2 secs
+    print(f"Executed in {end-start:0.2f} seconds") # 2 secs
     print([result_a, result_b])
 
-asyncio.run(run_tasks_async_alt())
+asyncio.run(run_tasks_async_create())
 ```
 
 ```sh
-$ python async_tasks_alt.py 
+$ python async_tasks_create.py 
 Task A created...
 Task B created...
 Do other work here...
@@ -126,7 +131,7 @@ import time
 
 async def task_a():
     print("Task A starts")
-    time.sleep(1)  # 1 sec BLOCKING task, no longer await asyncio.sleep(1)
+    time.sleep(1)  # 1 sec BLOCKING task!
     print("Task A ends")
     return "A1"
 
@@ -140,7 +145,7 @@ async def run_tasks_async_blocked():
     start = time.perf_counter()
     result = await asyncio.gather(task_a(), task_b())
     end = time.perf_counter()
-    print(f"Executed in {end-start:0.2f} seconds") # takes about 3 secs!
+    print(f"Executed in {end-start:0.2f} seconds") # 3 secs!
     print(result)
 
 asyncio.run(run_tasks_async_blocked())
@@ -156,7 +161,7 @@ Executed in 3.00 seconds
 ['A1', 'B2']
 ```
 
-If the order of the two tasks is reversed, what would be the execution time?
+If the order of task_a and task_b is reversed, the execution time becomes 2 seconds. If you understand why this happened, you understand asyncio.
 
 Replace the blocking sleep issue with any of the following and you might discover problems you never knew existed.
 1. file read/write operations

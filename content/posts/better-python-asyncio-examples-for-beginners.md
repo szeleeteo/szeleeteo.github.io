@@ -25,7 +25,7 @@ Hello ...
 ```
 
 Slowly, I learned that:
-1. A single, invisible event loop is created by `asyncio.run` as top-level entry point to run athe coroutine `main`.
+1. A single, invisible event loop is created by `asyncio.run` as top-level entry point to run the coroutine `main`.
 1. A _coroutine_ is a kind of non-blocking function that can be suspended and resumed; both `main` and `asyncio.sleep` above are coroutines.
 1. `async` and `await` are keywords that deal with coroutine declaration and calling respectively.
 

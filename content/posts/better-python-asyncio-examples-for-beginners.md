@@ -185,7 +185,7 @@ Replace the blocking task A above with any of the following and you might discov
 
 Basically, it's turtles all the way down.
 
-🐢
-🐢🐢
-🐢🐢🐢
-🐢🐢🐢🐢
+:turtle:<br>
+:turtle::turtle:<br>
+:turtle::turtle::turtle:<br>
+:turtle::turtle::turtle::turtle:

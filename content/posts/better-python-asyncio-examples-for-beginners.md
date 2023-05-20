@@ -130,7 +130,7 @@ Executed in 4.00 seconds
 ['A1', 'B2']
 ```
 
-Most examples would _helpfully_ gave advice like "please don't mix with blocking I/O operations" without clearly demonstrating the how and why. Recently, I spotted some old async code snippets in which yours truly had inadvertently used `time.sleep` instead of `asyncio.sleep` for a retry mechanism. Here's why.
+Most examples would _helpfully_ gave advice like "please don't mix with blocking I/O operations" without clearly demonstrating the how and why. Recently, I spotted some old async code snippets in which yours truly had inadvertently used `time.sleep` instead of `asyncio.sleep` for a retry mechanism.
 
 ```python
 # async_tasks_blocked.py 
@@ -176,8 +176,16 @@ Task B ends
 Executed in 6.01 seconds
 ['A1', 'B2', 'C3']
 ```
+While non-blocking tasks (like B and C) are cooperative to give way to one and another; blocking tasks (like A) are basically road hoggers.
 
-Replace the blocking sleep issue with any of the following and you might discover problems you never knew existed.
+Replace the blocking task A above with any of the following and you might discover problems you never knew existed.
 1. file read/write operations
 1. database read/write operations
 1. network operations e.g. HTTP requests
+
+Basically, it's turtles all the way down.
+
+🐢
+🐢🐢
+🐢🐢🐢
+🐢🐢🐢🐢

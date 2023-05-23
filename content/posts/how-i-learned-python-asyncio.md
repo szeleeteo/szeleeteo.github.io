@@ -1,5 +1,5 @@
 ---
-title: "Better Python Asyncio Examples for Beginners"
+title: "How I Learned Python Asyncio"
 date: 2023-05-14T15:08:46+08:00
 tags: [python,async]
 ---
@@ -24,7 +24,7 @@ Hello ...
 ... World!
 ```
 
-Slowly, I learned that:
+Slowly, I understood that:
 1. A single, invisible event loop is created by `asyncio.run` as top-level entry point to run the coroutine `main`.
 1. A _coroutine_ is a kind of non-blocking function that can be suspended and resumed; both `main` and `asyncio.sleep` above are coroutines.
 1. `async` and `await` are keywords that deal with coroutine declaration and calling respectively.
@@ -130,7 +130,7 @@ Executed in 4.00 seconds
 ['A1', 'B2']
 ```
 
-Most examples would _helpfully_ gave advice like "please don't mix with blocking I/O operations" without clearly demonstrating the how and why. Recently, I spotted some old async code snippets in which yours truly had inadvertently used `time.sleep` instead of `asyncio.sleep` for a retry mechanism.
+Most examples would helpfully advise on "please don't mix with blocking I/O operations" without clearly demonstrating the how and why. Recently, I spotted some old async code snippets in which yours truly had inadvertently used `time.sleep` instead of `asyncio.sleep` for a retry mechanism.
 
 ```python
 # async_tasks_blocked.py 
@@ -176,14 +176,10 @@ Task B ends
 Executed in 6.01 seconds
 ['A1', 'B2', 'C3']
 ```
-While non-blocking tasks (like B and C) are cooperative to give way to one and another; blocking tasks (like A) are basically road hoggers.
 
-Replace the blocking task A above with any of the following and you might discover problems you never knew existed.
-1. file read/write operations
-1. database read/write operations
-1. network operations e.g. HTTP requests
+Imagine three tasks as cars on a multi-lane highway in asyncio. They can proceed independently, even if others are delayed. The event loop manages their execution. However, a blocking I/O operation (task A with `time.sleep` above), like a car encountering a roadblock, halts progress until completed. It disrupts the flow of tasks, causing others to wait. This mirrors synchronous programming's blocking nature. asyncio's concurrency improves responsiveness, allowing non-blocking I/O operations, optimizing task execution, and enhancing Python app performance.
 
-Basically, it's turtles all the way down.
+It's turtles all the way down.
 
 :turtle:<br>
 :turtle::turtle:<br>

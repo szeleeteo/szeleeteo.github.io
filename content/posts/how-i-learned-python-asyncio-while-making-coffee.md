@@ -134,7 +134,7 @@ Most examples would _helpfully_ advise on "please don't mix with blocking I/O op
 
 Imagine you're making a cup of coffee. In a linear approach, you would wait for the water to boil before grinding the coffee beans and then wait again for the brewing process to complete. It's clearly an inefficient step-by-step process with a lot of waiting time in between.
 
-In asyncio coffee-making, while waiting for the water to boil, you can start grinding the beans. You take advantage of the waiting time to make progress on other tasks. The potential pitfall is that not all tasks can be run concurrently.
+In asyncio coffee-making, while waiting for the water to boil, you can start grinding the beans. You take advantage of the waiting time to make progress on other tasks. However, the potential pitfall is that not all tasks can be run concurrently.
 
 ```python
 # make_coffee_wrong.py 
@@ -183,10 +183,10 @@ Executed in 3.00 seconds
 ['Boiled water', 'Ground coffee', 'Coffee ready!']
 ```
 
-Obviously, both water boiling and coffee bean grinding need to be completed before the pouring can be initiated! Also, being a pourover coffee fan, I basically cannot do anything else during the brewing process, so `brew_coffee` is a blocking I/O a.k.a. normal function instead of a coroutine.
+Obviously, both water boiling and coffee bean grinding need to be completed before the brewing can start! Being manual pourover coffee fan, I am unable to do anything else during the brewing process, so `brew_coffee` becomes a blocking I/O.
 
 ```python
-# make_coffee.py
+# make_coffee_correct.py
 import asyncio
 import time
 
@@ -219,7 +219,7 @@ async def make_coffee():
 asyncio.run(make_coffee())
 ```
 ```sh
-$ python make_coffee.py
+$ python make_coffee_correct.py
 Boil water starts
 Grind coffee bean starts
 Grind coffee bean ends
@@ -230,4 +230,12 @@ Executed in 4.00 seconds
 ['Boiled water', 'Ground coffee', 'Coffee ready!']
 ```
 
-Now, if you could excuse me to get back to my boiling water, got some :coffee: to make!
+If I were to possess an automated coffee brewing machine, the `brew_coffee` function would switch back into a non-blocking operation, functioning as an asynchronous coroutine. Although it would still necessitate waiting for the completion of boiling water and ground coffee preparation, `brew_coffee` could then be awaited and executed concurrently with other tasks, such as `toast_bread`.
+
+These are some common scenarios to consider:
+* Choice between `asyncio.sleep` and `time.sleep` while implementing retry
+* Evaluation of package for http request - `requests` versus `httpx`
+* Comparison of Postgres database driver - `psycopg2` versus `asyncpg`
+* Examination of database ORM solutions like SQLAlchemy (version 1.4 and later supports asyncio)
+
+Now, if you will kindly excuse me, I must return to attending my boiling water and make some :coffee:!

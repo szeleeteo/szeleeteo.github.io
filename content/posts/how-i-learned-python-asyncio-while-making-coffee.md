@@ -213,7 +213,7 @@ async def make_coffee():
     result = await asyncio.gather(boil_water(), grind_coffee_bean())
     result.append(brew_coffee(result))
     end = time.perf_counter()
-    print(f"Executed in {end-start:0.2f} seconds") # 6 secs!
+    print(f"Executed in {end-start:0.2f} seconds")
     print(result)
 
 asyncio.run(make_coffee())
@@ -230,10 +230,9 @@ Executed in 4.00 seconds
 ['Boiled water', 'Ground coffee', 'Coffee ready!']
 ```
 
-If I were to possess an automated coffee brewing machine, the `brew_coffee` function would switch back into a non-blocking operation, functioning as an asynchronous coroutine. Although it would still necessitate waiting for the completion of boiling water and ground coffee preparation, `brew_coffee` could then be awaited and executed concurrently with other tasks, such as `toast_bread`.
+If I have an automatic coffee brewing machine, the `brew_coffee` function would switch back into a non-blocking operation, functioning as an asynchronous coroutine. Although it would still necessitate waiting for the completion of boiling water and ground coffee preparation, `brew_coffee` could then be executed concurrently with other tasks, such as `toast_bread`.
 
-These are some common scenarios to consider:
-* Choice between `asyncio.sleep` and `time.sleep` while implementing retry
+Some common scenarios often encountered in actual development:
 * Evaluation of package for http request - `requests` versus `httpx`
 * Comparison of Postgres database driver - `psycopg2` versus `asyncpg`
 * Examination of database ORM solutions like SQLAlchemy (version 1.4 and later supports asyncio)

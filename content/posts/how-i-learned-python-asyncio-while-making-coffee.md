@@ -31,7 +31,7 @@ Slowly, I understood that:
 
 Delving into the intricate definition is futile and meaningless, at least for now.
 
-The whole point of asyncio is to execute tasks concurrently, e.g. by using `asyncio.gather`.
+The whole point of asyncio is to execute tasks concurrently; one of the most common ways is by using `asyncio.gather`.
 
 ```python
 # async_tasks.py
@@ -157,7 +157,7 @@ async def brew_coffee():
     print("Brew coffee starts")
     await asyncio.sleep(1)
     print("Brew coffee ends")
-    return "Coffee ready!"
+    return "Coffee not ready!"
 
 async def make_coffee_wrong():
     start = time.perf_counter()
@@ -165,7 +165,7 @@ async def make_coffee_wrong():
         boil_water(), grind_coffee_bean(), brew_coffee()
     )
     end = time.perf_counter()
-    print(f"Executed in {end-start:0.2f} seconds")  # 6 secs!
+    print(f"Executed in {end-start:0.2f} seconds")
     print(result)
 
 asyncio.run(make_coffee_wrong())
@@ -180,10 +180,10 @@ Brew coffee ends
 Grind coffee bean ends
 Boil water ends
 Executed in 3.00 seconds
-['Boiled water', 'Ground coffee', 'Coffee ready!']
+['Boiled water', 'Ground coffee', 'Coffee not ready!']
 ```
 
-Obviously, both water boiling and coffee bean grinding need to be completed before the brewing can start! Being manual pourover coffee fan, I am unable to do anything else during the brewing process, so `brew_coffee` becomes a blocking I/O.
+Obviously, both water boiling and coffee bean grinding need to be completed before the brewing can start! Furthermore, if you prefer a manual pourover coffee method like me, you will be restricted to the brewing process and unable to do anything else concurrently, so `brew_coffee` becomes a blocking I/O.
 
 ```python
 # make_coffee_correct.py
@@ -203,9 +203,9 @@ async def grind_coffee_bean():
     return "Ground coffee"
 
 def brew_coffee(ingredients):
-    print(f"Brew coffee with {ingredients} starts")
+    print(f"Brew coffee manually with {ingredients} starts")
     time.sleep(1)
-    print(f"Brew coffee with {ingredients} ends")
+    print(f"Brew coffee manually with {ingredients} ends")
     return "Coffee ready!"
 
 async def make_coffee():
@@ -224,17 +224,17 @@ Boil water starts
 Grind coffee bean starts
 Grind coffee bean ends
 Boil water ends
-Brew coffee with ['Boiled water', 'Ground coffee'] starts
-Brew coffee with ['Boiled water', 'Ground coffee'] ends
+Brew coffee manually with ['Boiled water', 'Ground coffee'] starts
+Brew coffee manually with ['Boiled water', 'Ground coffee'] ends
 Executed in 4.00 seconds
 ['Boiled water', 'Ground coffee', 'Coffee ready!']
 ```
 
 If I have an automatic coffee brewing machine, the `brew_coffee` function would switch back into a non-blocking operation, functioning as an asynchronous coroutine. Although it would still necessitate waiting for the completion of boiling water and ground coffee preparation, `brew_coffee` could then be executed concurrently with other tasks, such as `toast_bread`.
 
-Some common scenarios often encountered in actual development:
-* Evaluation of package for http request - `requests` versus `httpx`
-* Comparison of Postgres database driver - `psycopg2` versus `asyncpg`
-* Examination of database ORM solutions like SQLAlchemy (version 1.4 and later supports asyncio)
+Some common scenarios of blocking vs non-blocking I/O often encountered in actual development:
+* Package for http request - [requests](https://requests.readthedocs.io/en/latest/) versus [httpx](https://www.python-httpx.org/)
+* Postgres database driver - [psycopg2](https://www.psycopg.org/) versus [asyncpg](https://magicstack.github.io/asyncpg/current/)
+* Database ORM solutions like [SQLAlchemy](https://www.sqlalchemy.org/) (version 1.4 and later supports asyncio) or [Tortoise](https://tortoise.github.io/)
 
 Now, if you will kindly excuse me, I must return to attending my boiling water and make some :coffee:!

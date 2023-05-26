@@ -25,11 +25,11 @@ Hello ...
 ```
 
 Slowly, I understood that:
-1. A single event loop is created by `asyncio.run` as top-level entry point to run asynchronous tasks - coroutine `main` in the example above.
+1. A single event loop is created by `asyncio.run` as top-level entry point to run asynchronous tasks such as the `main` coroutine above.
 1. A _coroutine_ is a kind of non-blocking function that can be suspended and resumed; both `main` and `asyncio.sleep` above are coroutines.
 1. `async` and `await` are keywords that deal with coroutine declaration and calling respectively.
 
-Delving into the intricate definition is futile and meaningless, at least for now.
+Delving into the intricate definition is futile and meaningless at this stage.
 
 The whole point of asyncio is to execute tasks concurrently. The most straightforward way to do so is by using `asyncio.gather`.
 
@@ -162,7 +162,7 @@ async def brew_coffee():
     print("Brew coffee ends")
     return "Coffee not ready!"
 
-async def make_coffee_wrong():
+async def make_coffee_blocking_wrong():
     start = time.perf_counter()
     result = await asyncio.gather(
         boil_water(), grind_coffee_bean(), brew_coffee()
@@ -175,7 +175,7 @@ asyncio.run(make_coffee_blocking_wrong())
 ```
 
 ```sh
-$ python make_coffee_wrong.py 
+$ python make_coffee_blocking_wrong.py 
 Boil water starts
 Grind coffee bean starts
 Brew coffee starts
@@ -186,7 +186,7 @@ Executed in 3.00 seconds
 ['Boiled water', 'Ground coffee', 'Coffee not ready!']
 ```
 
-Obviously, both water boiling and coffee bean grinding need to be completed before the brewing can start! Furthermore, if you prefer a manual pourover coffee method like me, you will be restricted to the brewing process and unable to do anything else concurrently. Therefore, `brew_coffee` becomes a blocking function.
+Obviously, both water boiling and coffee bean grinding need to be completed before the brewing can start! Furthermore, if you prefer a manual pourover coffee method like me, you will be stuck to the brewing process and unable to do anything else concurrently. Therefore, `brew_coffee` becomes a blocking function.
 
 ```python
 # make_coffee_blocking_correct.py
@@ -222,14 +222,14 @@ async def make_coffee():
 asyncio.run(make_coffee())
 ```
 ```sh
-$ python make_coffee_blocking_wrong.py
+$ python make_coffee_blocking_correct.py
 Boil water starts
 Grind coffee bean starts
 Grind coffee bean ends
 Boil water ends
 Brew coffee manually with ['Boiled water', 'Ground coffee'] starts
 Brew coffee manually with ['Boiled water', 'Ground coffee'] ends
-Executed in 4.00 seconds
+Executed in 4.01 seconds
 ['Boiled water', 'Ground coffee', 'Coffee ready!']
 ```
 
@@ -289,13 +289,11 @@ Executed in 4.00 seconds
 ['Boiled water', 'Ground coffee', 'Coffee ready!', 'Toast bread ready!']
 ```
 
-Even though `toast_bread` requires additional 0.9 seconds, the total time required to complete all tasks is still 4 seconds thanks to the asynchronous `brew_coffee_with_machine`.
-
 Some common scenarios where the issue of blocking vs non-blocking I/O are often encountered in actual development:
 * Package for http request - [requests](https://requests.readthedocs.io/) versus [httpx](https://www.python-httpx.org/) and [aiohttp](https://docs.aiohttp.org/)
 * Postgres database driver - [psycopg2](https://www.psycopg.org/) versus [asyncpg](https://magicstack.github.io/asyncpg/)
 * Database ORM solutions like [SQLAlchemy](https://www.sqlalchemy.org/) (version 1.4 and later supports asyncio) or [Tortoise](https://tortoise.github.io/)
 
-Now, if you will kindly excuse me, I must return to attending my boiling water! 
+Now, if you will kindly excuse me, I must return to attending my boiling water to make some coffee!
 
 :coffee:

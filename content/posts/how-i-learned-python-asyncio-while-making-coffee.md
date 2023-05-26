@@ -260,9 +260,9 @@ async def make_coffee_with_machine(ingredients):
     return "Coffee ready!"
 
 async def toast_bread():
-    print(f"Toast bread starts")
+    print("Toast bread starts")
     await asyncio.sleep(0.9)
-    print(f"Toast bread ends")
+    print("Toast bread ends")
     return "Toast bread ready!"
 
 async def make_coffee_non_blocking():

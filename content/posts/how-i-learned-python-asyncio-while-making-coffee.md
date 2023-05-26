@@ -29,11 +29,9 @@ Slowly, I understood that:
 1. A _coroutine_ is a kind of non-blocking function that can be suspended and resumed; both `main` and `asyncio.sleep` above are coroutines.
 1. `async` and `await` are keywords that deal with coroutine declaration and calling respectively.
 
-Delving into the intricate definition is futile and meaningless at this stage.
-
+## Gather Tasks
 The whole point of asyncio is to execute tasks concurrently. The most straightforward way to do so is by using `asyncio.gather`.
 
-## Gather Tasks
 ```python
 # gather_tasks.py
 import asyncio
@@ -80,7 +78,7 @@ Executed in 4.00 seconds
 ```
 
 ## Create Tasks
-An alternative without the need of `asyncio.gather` is to use `asyncio.create_task`.
+An alternative is to use `asyncio.create_task`.
 
 ```python
 # create_tasks.py
@@ -140,7 +138,7 @@ Imagine you're making a cup of coffee. In a linear approach, you would wait for 
 In asyncio coffee-making, while waiting for the water to boil, you can start grinding the beans. You take advantage of the waiting time to make progress on other tasks. However, the potential pitfall is that not all tasks can be run concurrently.
 
 ```python
-# make_coffee_blocking_wrong.py 
+# make_coffee_wrong.py 
 import asyncio
 import time
 
@@ -162,7 +160,7 @@ async def brew_coffee():
     print("Brew coffee ends")
     return "Coffee not ready!"
 
-async def make_coffee_blocking_wrong():
+async def make_coffee():
     start = time.perf_counter()
     result = await asyncio.gather(
         boil_water(), grind_coffee_bean(), brew_coffee()
@@ -171,15 +169,15 @@ async def make_coffee_blocking_wrong():
     print(f"Executed in {end-start:0.2f} seconds")
     print(result)
 
-asyncio.run(make_coffee_blocking_wrong())
+asyncio.run(make_coffee())
 ```
 
 ```sh
-$ python make_coffee_blocking_wrong.py 
+$ python make_coffee_wrong.py 
 Boil water starts
 Grind coffee bean starts
-Brew coffee starts
-Brew coffee ends
+Brew coffee manually starts
+Brew coffee manually ends
 Grind coffee bean ends
 Boil water ends
 Executed in 3.00 seconds
@@ -189,7 +187,7 @@ Executed in 3.00 seconds
 Obviously, both water boiling and coffee bean grinding need to be completed before the brewing can start! Furthermore, if you prefer a manual pourover coffee method like me, you will be stuck to the brewing process and unable to do anything else concurrently. Therefore, `brew_coffee` becomes a blocking function.
 
 ```python
-# make_coffee_blocking_correct.py
+# make_coffee_correct.py
 import asyncio
 import time
 
@@ -222,19 +220,19 @@ async def make_coffee():
 asyncio.run(make_coffee())
 ```
 ```sh
-$ python make_coffee_blocking_correct.py
+$ python make_coffee_correct.py
 Boil water starts
 Grind coffee bean starts
 Grind coffee bean ends
 Boil water ends
 Brew coffee manually with ['Boiled water', 'Ground coffee'] starts
 Brew coffee manually with ['Boiled water', 'Ground coffee'] ends
-Executed in 4.01 seconds
+Executed in 4.00 seconds
 ['Boiled water', 'Ground coffee', 'Coffee ready!']
 ```
 
-## Converting from Blocking to Non-Blocking Tasks
-Finally, if I have an automatic coffee brewing machine, the `brew_coffee` function could be switched back into a non-blocking operation, functioning as an asynchronous coroutine. Although it would still necessitate waiting for the completion of boiling water and ground coffee preparation, `brew_coffee` could then be executed concurrently with other tasks, such as `toast_bread`.
+## Converting from Blocking to Non-Blocking
+On the other hand, if I have an automatic coffee brewing machine, the `brew_coffee` function could turn into a non-blocking operation, functioning as an asynchronous coroutine. Although it would still necessitate waiting for the completion of boiling water and ground coffee preparation, `brew_coffee` could then be executed concurrently with other tasks, such as `toast_bread`.
 
 ```python
 # make_coffee_non_blocking.py
@@ -253,10 +251,10 @@ async def grind_coffee_bean():
     print("Grind coffee bean ends")
     return "Ground coffee"
 
-async def make_coffee_with_machine(ingredients):
-    print(f"Brew coffee manually with {ingredients} starts")
+async def brew_coffee(ingredients):
+    print(f"Brew coffee automatically with {ingredients} starts")
     await asyncio.sleep(1)
-    print(f"Brew coffee manually with {ingredients} ends")
+    print(f"Brew coffee automatically with {ingredients} ends")
     return "Coffee ready!"
 
 async def toast_bread():
@@ -265,15 +263,15 @@ async def toast_bread():
     print("Toast bread ends")
     return "Toast bread ready!"
 
-async def make_coffee_non_blocking():
+async def make_coffee():
     start = time.perf_counter()
     result1 = await asyncio.gather(boil_water(), grind_coffee_bean())
-    result2 = await asyncio.gather(make_coffee_with_machine(result1), toast_bread())
+    result2 = await asyncio.gather(brew_coffee(result1), toast_bread())
     end = time.perf_counter()
     print(f"Executed in {end-start:0.2f} seconds")
     print(result1+result2)
 
-asyncio.run(make_coffee_non_blocking())
+asyncio.run(make_coffee())
 ```
 ```sh
 $ python make_coffee_non_blocking.py
@@ -281,19 +279,17 @@ Boil water starts
 Grind coffee bean starts
 Grind coffee bean ends
 Boil water ends
-Brew coffee manually with ['Boiled water', 'Ground coffee'] starts
+Brew coffee automatically with ['Boiled water', 'Ground coffee'] starts
 Toast bread starts
 Toast bread ends
-Brew coffee manually with ['Boiled water', 'Ground coffee'] ends
+Brew coffee automatically with ['Boiled water', 'Ground coffee'] ends
 Executed in 4.00 seconds
 ['Boiled water', 'Ground coffee', 'Coffee ready!', 'Toast bread ready!']
 ```
 
-Some common scenarios where the issue of blocking vs non-blocking I/O are often encountered in actual development:
+Common scenarios where the issue of blocking vs non-blocking I/O are often encountered in real development:
 * Package for http request - [requests](https://requests.readthedocs.io/) versus [httpx](https://www.python-httpx.org/) and [aiohttp](https://docs.aiohttp.org/)
 * Postgres database driver - [psycopg2](https://www.psycopg.org/) versus [asyncpg](https://magicstack.github.io/asyncpg/)
 * Database ORM solutions like [SQLAlchemy](https://www.sqlalchemy.org/) (version 1.4 and later supports asyncio) or [Tortoise](https://tortoise.github.io/)
 
 Now, if you will kindly excuse me, I must return to attending my boiling water to make some coffee!
-
-:coffee:

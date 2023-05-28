@@ -2,7 +2,7 @@ languageCode = "en"
 languageName = "English"
 weight = 1
 
-title = "szelee's blog"
+title = "szelee.com"
 # copyright = "Copy, _right?_ :thinking_face:"
 
 [params]
@@ -15,7 +15,7 @@ title = "szelee's blog"
   # description = "Welcome to my blog"
 
 [author]
-  name = "Sze Lee, Teo"
+  name = "szelee"
   image = "img/szelee.jpg"
   # headline = "I'm only human"
   # bio = "A little bit about you"

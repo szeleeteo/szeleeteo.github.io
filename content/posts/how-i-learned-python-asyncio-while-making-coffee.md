@@ -225,13 +225,14 @@ async def make_coffee_toast():
     start = time.perf_counter()
     result = await asyncio.gather(boil_water(), grind_coffee_bean())
     result.append(brew_coffee(result))
-    result.append(await toast_bread)
+    result.append(await toast_bread())
     end = time.perf_counter()
     print(f"Executed in {end-start:0.2f} seconds")
     print(result)
 
-asyncio.run(make_coffee())
+asyncio.run(make_coffee_toast())
 ```
+
 ```sh
 $ python make_coffee_toast_blocked.py
 Boil water starts
@@ -243,7 +244,7 @@ Brew coffee manually with ['Boiled water', 'Ground coffee'] ends
 Toast bread starts
 Toast bread ends
 Executed in 4.90 seconds
-['Boiled water', 'Ground coffee', 'Coffee ready!', 'Toast bread ready!']
+['Boiled water', 'Ground coffee', 'Coffee ready!', 'Toast bread ready!
 ```
 
 ## Converting from Blocking to Non-Blocking

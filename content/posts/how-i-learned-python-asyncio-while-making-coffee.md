@@ -155,9 +155,9 @@ async def grind_coffee_bean():
     return "Ground coffee"
 
 async def brew_coffee():
-    print("Brew coffee starts")
+    print("Brew coffee manually starts")
     await asyncio.sleep(1)
-    print("Brew coffee ends")
+    print("Brew coffee manually ends")
     return "Coffee not ready!"
 
 async def make_coffee():
@@ -184,10 +184,16 @@ Executed in 3.00 seconds
 ['Boiled water', 'Ground coffee', 'Coffee not ready!']
 ```
 
-Obviously, both water boiling and coffee bean grinding need to be completed before the brewing can start! Furthermore, if you prefer a manual pourover coffee method like me, you will be stuck to the brewing process and unable to do anything else concurrently. Therefore, `brew_coffee` becomes a blocking function.
+Obviously, both water boiling and coffee bean grinding need to be completed before the brewing can start! 
+
+Furthermore, if you prefer a manual pourover coffee method like me, you will be stuck to the brewing process and unable to do anything else concurrently. 
+
+In this scenario, `brew_coffee` becomes a blocking function. It will cause the event loop to stop and disallow other coroutines to run in the background. 
+
+Let's say I have another task `toast_bread` which also can only be run after `boil_water` and `grind_coffee_bean` are completed (due to limited power socket). We are unable to run both `brew_coffee` and `toast_bread` concurrently.
 
 ```python
-# make_coffee_correct.py
+# make_coffee_toast_blocked.py
 import asyncio
 import time
 
@@ -208,11 +214,18 @@ def brew_coffee(ingredients):
     time.sleep(1) # blocking!
     print(f"Brew coffee manually with {ingredients} ends")
     return "Coffee ready!"
-
-async def make_coffee():
+    
+async def toast_bread():
+    print("Toast bread starts")
+    await asyncio.sleep(0.9)
+    print("Toast bread ends")
+    return "Toast bread ready!"
+    
+async def make_coffee_toast():
     start = time.perf_counter()
     result = await asyncio.gather(boil_water(), grind_coffee_bean())
     result.append(brew_coffee(result))
+    result.append(await toast_bread)
     end = time.perf_counter()
     print(f"Executed in {end-start:0.2f} seconds")
     print(result)
@@ -220,22 +233,24 @@ async def make_coffee():
 asyncio.run(make_coffee())
 ```
 ```sh
-$ python make_coffee_correct.py
+$ python make_coffee_toast_blocked.py
 Boil water starts
 Grind coffee bean starts
 Grind coffee bean ends
 Boil water ends
 Brew coffee manually with ['Boiled water', 'Ground coffee'] starts
 Brew coffee manually with ['Boiled water', 'Ground coffee'] ends
-Executed in 4.00 seconds
-['Boiled water', 'Ground coffee', 'Coffee ready!']
+Toast bread starts
+Toast bread ends
+Executed in 4.90 seconds
+['Boiled water', 'Ground coffee', 'Coffee ready!', 'Toast bread ready!']
 ```
 
 ## Converting from Blocking to Non-Blocking
-On the other hand, if I have an automatic coffee brewing machine, the `brew_coffee` function could turn into a non-blocking operation, functioning as an asynchronous coroutine. Although it would still necessitate waiting for the completion of boiling water and ground coffee preparation, `brew_coffee` could then be executed concurrently with other tasks, such as `toast_bread`.
+On the other hand, if I have an automatic coffee brewing machine, the `brew_coffee` function could turn into a non-blocking operation, functioning as an asynchronous coroutine. Although it would still necessitate waiting for the completion of boiling water and ground coffee preparation, `brew_coffee` could then be executed concurrently with `toast_bread`.
 
 ```python
-# make_coffee_non_blocking.py
+# make_coffee_toast_concurrent.py
 import asyncio
 import time
 
@@ -263,7 +278,7 @@ async def toast_bread():
     print("Toast bread ends")
     return "Toast bread ready!"
 
-async def make_coffee():
+async def make_coffee_toast():
     start = time.perf_counter()
     result1 = await asyncio.gather(boil_water(), grind_coffee_bean())
     result2 = await asyncio.gather(brew_coffee(result1), toast_bread())
@@ -271,10 +286,10 @@ async def make_coffee():
     print(f"Executed in {end-start:0.2f} seconds")
     print(result1+result2)
 
-asyncio.run(make_coffee())
+asyncio.run(make_coffee_toast())
 ```
 ```sh
-$ python make_coffee_non_blocking.py
+$ python make_coffee_toast_concurrent.py
 Boil water starts
 Grind coffee bean starts
 Grind coffee bean ends

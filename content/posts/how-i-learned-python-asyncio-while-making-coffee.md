@@ -2,6 +2,7 @@
 title: "How I Learned Python Asyncio While Making Coffee"
 date: 2023-05-14T15:08:46+08:00
 tags: [python,async]
+draft: true
 ---
 ## Hello World Async
 I remember the first time I read the [official Python asyncio example](https://docs.python.org/3/library/asyncio.html); it was as useful as staring at a blank wall and expecting it to solve world hunger. 
@@ -25,12 +26,17 @@ Hello ...
 ```
 
 Slowly, I understood that:
-1. A single event loop is created by `asyncio.run` as top-level entry point to run asynchronous tasks such as the `main` coroutine above.
+1. A single event loop is created by `asyncio.run` as top-level entry point.
+1. That entry point allows asynchronous tasks to run, such as the `main` coroutine above.
 1. A _coroutine_ is a kind of non-blocking function that can be suspended and resumed; both `main` and `asyncio.sleep` above are coroutines.
 1. `async` and `await` are keywords that deal with coroutine declaration and calling respectively.
 
+In other words, there is a giant while loop that allows for functions to take turn to run, pause and resume that makes concurrency possible.
+
 ## Gather Tasks
-The whole point of asyncio is to execute tasks concurrently. The most straightforward way to do so is by using `asyncio.gather`.
+The whole point of asyncio is to execute tasks concurrently because it is usually faster than rather in sequence.
+
+The most straightforward way to do so is by using `asyncio.gather`.
 
 ```python
 # gather_tasks.py
@@ -78,7 +84,7 @@ Executed in 4.00 seconds
 ```
 
 ## Create Tasks
-An alternative is to use `asyncio.create_task`.
+An alternative way is to use `asyncio.create_task`.
 
 ```python
 # create_tasks.py
@@ -156,7 +162,11 @@ async def grind_coffee_bean():
 
 async def brew_coffee():
     print("Brew coffee manually starts")
+<<<<<<< HEAD
     await asyncio.sleep(1)
+=======
+    time.sleep(1) # blocking function
+>>>>>>> d62c3b5 (Set post to draft)
     print("Brew coffee manually ends")
     return "Coffee not ready!"
 
